@@ -43,8 +43,8 @@ Telegram Bot which scrapes the data from the [SAMVIDHA](https://samvidha.iare.ac
 
 -    '/request {your request}' - Send a request to the bot developer.
 
-    Note: Replace {username}, {password}, and {your request} with actual values.
-    """
+-    Note: Replace {username}, {password}, and {your request} with actual values.
+   
 
 
 
