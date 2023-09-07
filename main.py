@@ -18,7 +18,7 @@ import asyncio
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 API_ID = os.environ.get("API_ID")
 API_HASH = os.environ.get("API_HASH")
-DEVELOPER_CHAT_ID = os.environ.get("DEVELOPER_CHAT_ID")
+# DEVELOPER_CHAT_ID = os.environ.get("DEVELOPER_CHAT_ID")
 bot = Client(
         "IARE BOT",
         bot_token = BOT_TOKEN,
@@ -27,8 +27,8 @@ bot = Client(
 )
 
 # #Bot devoloper ID
-# BOT_DEVELOPER_CHAT_ID = 1767667538
-BOT_DEVELOPER_CHAT_ID = DEVELOPER_CHAT_ID
+BOT_DEVELOPER_CHAT_ID = 1767667538
+# BOT_DEVELOPER_CHAT_ID = DEVELOPER_CHAT_ID
 # SQLite database file
 DATABASE_FILE = "user_sessions.db"
 
