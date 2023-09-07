@@ -8,19 +8,20 @@ Telegram Bot which scrapes the data from the [SAMVIDHA](https://samvidha.iare.ac
 - `API_HASH` - Get this from [my.telegram.org](https://my.telegram.org/auth).
 - `BOT_TOKEN` - Get this from [@BotFather](https://t.me/BotFather).
 
-##DEPLOY TO HEROKU
+## DEPLOY TO HEROKU
+
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/samadii/Transcript-Extractor-Bot)
 
 
-##LOCAL DEPLOY
+## LOCAL DEPLOY
 1. Clone the repository.
-   '''
+   ```
    git clone 
-   '''
+   ```
 2. Enter the directory.
-   '''
+   ```
    cd 
-   '''
+   ```
 3. Install all requirements using pip.
    ```
    pip3 install -r requirements.txt
