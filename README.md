@@ -1,4 +1,4 @@
-#IARE BOT
+# IARE BOT
 
 Telegram Bot which scrapes the data from the [SAMVIDHA](https://samvidha.iare.ac.in/index) and Sends the calculated Attendance, Bunk..etc.
 
