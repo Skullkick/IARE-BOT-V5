@@ -18,7 +18,7 @@ import asyncio
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 API_ID = os.environ.get("API_ID")
 API_HASH = os.environ.get("API_HASH")
-# DEVELOPER_CHAT_ID = os.environ.get("DEVELOPER_CHAT_ID")
+# BOT_DEVELOPER_CHAT_ID = os.environ.get("DEVELOPER_CHAT_ID")
 bot = Client(
         "IARE BOT",
         bot_token = BOT_TOKEN,
@@ -26,9 +26,11 @@ bot = Client(
         api_hash = API_HASH
 )
 
-# #Bot devoloper ID
+#Bot Devoloper ID
 BOT_DEVELOPER_CHAT_ID = 1767667538
-# BOT_DEVELOPER_CHAT_ID = DEVELOPER_CHAT_ID
+#Bot Maintainer ID
+BOT_MAINTAINER_CHAT_ID = 1021583075
+
 # SQLite database file
 DATABASE_FILE = "user_sessions.db"
 
@@ -138,7 +140,7 @@ async def clear_sessions_table():
         conn.commit()
 @bot.on_message(filters.command('reset'))
 async def reset_database(bot,message):
-    if message.chat.id==BOT_DEVELOPER_CHAT_ID:
+    if message.chat.id==BOT_DEVELOPER_CHAT_ID or message.chat.id==BOT_MAINTAINER_CHAT_ID:
         await clear_sessions_table()
         await message.reply("Reset done")
 
@@ -591,7 +593,7 @@ async def request(bot,message):
 @bot.on_message(filters.command(commands=['reply']))
 async def reply_to_user(_,message):
     # Check if the user is authorized to use the /reply command
-    if message.chat.id != BOT_DEVELOPER_CHAT_ID:
+    if message.chat.id != BOT_DEVELOPER_CHAT_ID and message.chat.id != BOT_MAINTAINER_CHAT_ID:
         return
     # Check if the message is a reply to another message
     if not message.reply_to_message:
@@ -643,7 +645,7 @@ async def reply_to_user(_,message):
 @bot.on_message(filters.command(commands=['rshow']))
 async def rshow(bot,message):
     chat_id = message.from_user.id
-    if message.from_user.id != BOT_DEVELOPER_CHAT_ID:
+    if message.from_user.id != BOT_DEVELOPER_CHAT_ID and message.chat.id != BOT_MAINTAINER_CHAT_ID:
         await bot.send_message(chat_id,text="You are not authorized to use this command.")
         return
 
@@ -654,10 +656,10 @@ async def rshow(bot,message):
 
     for request_id, request in pending_requests.items():
         request_message = f"New User Request from @{request['username']} (ID: {request_id}):\n\n{request['request']}"
-        await bot.send_message(chat_id=BOT_DEVELOPER_CHAT_ID, text=request_message)
+        await bot.send_message(chat_id, text=request_message)
 @bot.on_message(filters.command(commands=['lusers']))
 async def list_users(bot,message):
-    if message.from_user.id == BOT_DEVELOPER_CHAT_ID:
+    if message.from_user.id == BOT_DEVELOPER_CHAT_ID or message.chat.id==BOT_MAINTAINER_CHAT_ID:
         with sqlite3.connect(TOTAL_USERS_DATABASE_FILE) as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT username FROM users")
@@ -668,13 +670,13 @@ async def list_users(bot,message):
             qr_code = pyqrcode.create(users_list)
             qr_image_path = "list_users_qr.png"
             qr_code.png(qr_image_path, scale=5)
-            await bot.send_photo(chat_id=BOT_DEVELOPER_CHAT_ID, photo=open(qr_image_path, 'rb'))
+            await bot.send_photo(message.chat.id, photo=open(qr_image_path, 'rb'))
             # await message.answer(users_list)
             os.remove(qr_image_path)
 
 @bot.on_message(filters.command(commands=['tusers']))
 async def total_users(_,message):
-    if message.from_user.id == BOT_DEVELOPER_CHAT_ID:
+    if message.from_user.id == BOT_DEVELOPER_CHAT_ID or message.chat.id==BOT_MAINTAINER_CHAT_ID:
         with sqlite3.connect(TOTAL_USERS_DATABASE_FILE) as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT COUNT(*) FROM users")
@@ -683,7 +685,7 @@ async def total_users(_,message):
 
 @bot.on_message(filters.command(commands=['rclear']))
 async def clean_pending_requests(bot,message):
-    if message.from_user.id== BOT_DEVELOPER_CHAT_ID:
+    if message.chat.id== BOT_DEVELOPER_CHAT_ID or message.chat.id==BOT_MAINTAINER_CHAT_ID:
         pending_requests.clear()
         await message.reply("Emptied the requests successfully")
 
@@ -738,8 +740,8 @@ async def help_command(bot,message):
 
     Note: Replace {username}, {password}, {your request} and {your reply} with actual values.
     """
-    if chat_id==BOT_DEVELOPER_CHAT_ID:
-        await bot.send_message(BOT_DEVELOPER_CHAT_ID,text=help_dmsg)
+    if chat_id==BOT_DEVELOPER_CHAT_ID or chat_id==BOT_MAINTAINER_CHAT_ID:
+        await bot.send_message(chat_id,text=help_dmsg)
     else:
         await bot.send_message(chat_id,text=help_msg)
 
