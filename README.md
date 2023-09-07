@@ -10,17 +10,17 @@ Telegram Bot which scrapes the data from the [SAMVIDHA](https://samvidha.iare.ac
 
 ## DEPLOY TO HEROKU
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/samadii/Transcript-Extractor-Bot)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Sathvik2005/IARE-BOT-V5)
 
 
 ## LOCAL DEPLOY
 1. Clone the repository.
    ```
-   git clone 
+   git clone https://github.com/Sathvik2005/IARE-BOT-V5
    ```
 2. Enter the directory.
    ```
-   cd 
+   cd cd IARE-BOT-V5
    ```
 3. Install all requirements using pip.
    ```
