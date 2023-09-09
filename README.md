@@ -21,7 +21,7 @@ Telegram Bot which scrapes the data from the [SAMVIDHA](https://samvidha.iare.ac
    ```
 2. Enter the directory.
    ```
-   cd cd IARE-BOT-V5
+   cd IARE-BOT-V5
    ```
 3. Install all requirements using pip.
    ```
