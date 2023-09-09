@@ -785,7 +785,7 @@ async def check_inactivity():
             # Convert the last_activity from string to datetime and localize it to the Indian timezone
             last_activity = indian_timezone.localize(datetime.strptime(last_activity, '%Y-%m-%d %H:%M:%S'))
 
-            if now - last_activity > timedelta(minutes=1):
+            if now - last_activity > timedelta(minutes=10):
                 print("Logging out")
                 # Log out the user and send a message
                 await logout_user(bot,chat_id)
@@ -807,7 +807,7 @@ async def main():
     await create_total_users_table()
     # Start the inactivity check loop
     while True:
-        # await asyncio.sleep()  # Sleep for 60 seconds
+        await asyncio.sleep()  # Sleep for 60 seconds
         await check_inactivity()
 
 if __name__ == "__main__":
