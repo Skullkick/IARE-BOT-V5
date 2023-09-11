@@ -807,7 +807,7 @@ async def main():
     await create_total_users_table()
     # Start the inactivity check loop
     while True:
-        await asyncio.sleep()  # Sleep for 60 seconds
+        # await asyncio.sleep()  # Sleep for 60 seconds
         await check_inactivity()
 
 if __name__ == "__main__":
