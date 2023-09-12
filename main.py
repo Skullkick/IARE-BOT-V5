@@ -803,8 +803,8 @@ async def update_activity_timestamp(chat_id):
 
 
 async def main():
-    await create_tables()
-    await create_total_users_table()
+    # await create_tables()
+    # await create_total_users_table()
     # Start the inactivity check loop
     while True:
         # await asyncio.sleep()  # Sleep for 60 seconds
