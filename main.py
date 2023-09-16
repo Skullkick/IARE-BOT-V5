@@ -18,7 +18,8 @@ import asyncio
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 API_ID = os.environ.get("API_ID")
 API_HASH = os.environ.get("API_HASH")
-# BOT_DEVELOPER_CHAT_ID = os.environ.get("DEVELOPER_CHAT_ID")
+BOT_DEVELOPER_CHAT_ID_re = os.environ.get("DEVELOPER_CHAT_ID")
+BOT_MAINTAINER_CHAT_ID_re = os.environ.get("MAINTAINER_CHAT_ID")
 bot = Client(
         "IARE BOT",
         bot_token = BOT_TOKEN,
@@ -27,9 +28,9 @@ bot = Client(
 )
 
 #Bot Devoloper ID
-BOT_DEVELOPER_CHAT_ID = 1767667538
+BOT_DEVELOPER_CHAT_ID = int(BOT_DEVELOPER_CHAT_ID_re)
 #Bot Maintainer ID
-BOT_MAINTAINER_CHAT_ID = 1021583075
+BOT_MAINTAINER_CHAT_ID = int(BOT_MAINTAINER_CHAT_ID_re)
 
 # SQLite database file
 DATABASE_FILE = "user_sessions.db"
@@ -406,7 +407,7 @@ async def biometric(_,message):
     biometric_percentage = round(biometric_percentage,3)
     # Prepare the biometric message
     biometric_msg = f"Number of Days Present: {days_present}\nNumber of Days Absent: {days_absent}\nTotal Number of Days: {total_days}\nBiometric Percentage: \n{biometric_percentage}%"
-    six_hours_message = sixhours(message)  
+    six_hours_message = await sixhours(message)  
     # Append the six hours message to the biometric message
     biometric_msg += "\n" + six_hours_message   
     await bot.send_message(chat_id,text=biometric_msg)
@@ -532,17 +533,25 @@ async def bunk(bot,message):
             attendance_percentage = row[7]
             if course_name and attendance_percentage:
                 # Calculate the maximum number of classes that can be bunked
+                attendance_present = float(attendance_percentage)
                 attendance_threshold = 75
                 total_classes = int(row[5])
                 attended_classes = int(row[6])
                 classes_bunked = 0
-
-                while (attended_classes / (total_classes + classes_bunked)) * 100 >= attendance_threshold:
-                    classes_bunked += 1
-
-                bunk_msg = f"{course_name}: {attendance_percentage}% (Can bunk {classes_bunked} classes)"
-                await bot.send_message(chat_id,bunk_msg)
-
+                if attendance_present >= attendance_threshold:
+                    classes_bunked = 0
+                    while (attended_classes / (total_classes + classes_bunked)) * 100 >= attendance_threshold:
+                        classes_bunked += 1
+                    bunk_can_msg = f"{course_name}: {attendance_percentage}% (Can bunk {classes_bunked} classes)" 
+                    await bot.send_message(chat_id,bunk_can_msg)
+                else:
+                    classes_needattend = 0
+                    while((attended_classes + classes_needattend) / (total_classes + classes_needattend)) * 100 < attendance_threshold:
+                        classes_needattend += 1
+                    bunk_cannot_msg = f"{course_name}:Attendance below 75%"
+                    bunk_recover_msg = f"{course_name}: Attend {classes_needattend} classes for 75%"
+                    await bot.send_message(chat_id,bunk_cannot_msg)
+                    await bot.send_message(chat_id,bunk_recover_msg)
     else:
         await message.reply("Data not found.")
 
@@ -803,8 +812,8 @@ async def update_activity_timestamp(chat_id):
 
 
 async def main():
-    # await create_tables()
-    # await create_total_users_table()
+    await create_tables()
+    await create_total_users_table()
     # Start the inactivity check loop
     while True:
         # await asyncio.sleep()  # Sleep for 60 seconds
@@ -814,4 +823,3 @@ if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     loop.create_task(main())
     bot.run()
-

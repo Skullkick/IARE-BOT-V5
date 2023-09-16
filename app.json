@@ -13,6 +13,10 @@
         "description": "Add your DEVELOPER_CHAT_ID",
         "value": ""
       },
+      "MAINTAINER_CHAT_ID": {
+        "description": "Add your DEVELOPER_CHAT_ID",
+        "value": ""
+      },
       "BOT_TOKEN": {
         "description": "Your bot token, as a string.",
         "value": ""
