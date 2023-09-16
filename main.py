@@ -407,7 +407,7 @@ async def biometric(_,message):
     biometric_percentage = round(biometric_percentage,3)
     # Prepare the biometric message
     biometric_msg = f"Number of Days Present: {days_present}\nNumber of Days Absent: {days_absent}\nTotal Number of Days: {total_days}\nBiometric Percentage: \n{biometric_percentage}%"
-    six_hours_message = await sixhours(message)  
+    six_hours_message = await sixhours(bot, message)  
     # Append the six hours message to the biometric message
     biometric_msg += "\n" + six_hours_message   
     await bot.send_message(chat_id,text=biometric_msg)
