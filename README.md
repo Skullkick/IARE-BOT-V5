@@ -8,6 +8,7 @@ Telegram Bot which scrapes the data from the [SAMVIDHA](https://samvidha.iare.ac
 - `API_HASH` - Get this from [my.telegram.org](https://my.telegram.org/auth).
 - `BOT_TOKEN` - Get this from [@BotFather](https://t.me/BotFather).
 - `DEVELOPER_CHAT_ID` - Get this from [@RawDataBot](https://t.me/raw_data_bot)
+- `MAINTAINER_CHAT_ID` - Get this from [@RawDataBot](https://t.me/raw_data_bot)
 
 ## DEPLOY TO HEROKU
 
