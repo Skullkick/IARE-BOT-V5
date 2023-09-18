@@ -591,9 +591,8 @@ async def request(bot,message):
     pending_requests[user_unique_id] = {'user_id': user_id, 'username': username, 'request': user_request}
 
     # Forward the user's request to the bot developer (you)
-    developer_chat_id = '1767667538'  # Replace with your chat ID
     forwarded_message = f"New User Request from @{username} (ID: {user_unique_id}):\n\n{user_request}"
-    await bot.send_message(chat_id=developer_chat_id,text=forwarded_message)
+    await bot.send_message(BOT_DEVELOPER_CHAT_ID,text=forwarded_message)
 
     # Send a confirmation message to the user
     await bot.send_message(user_id,"Thank you for your request! Your message has been forwarded to the developer.")
