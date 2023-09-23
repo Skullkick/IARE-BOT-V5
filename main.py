@@ -40,6 +40,11 @@ TOTAL_USERS_DATABASE_FILE = "total_users.db"
 # Define the dictionary to store user sessions in memory
 user_sessions = {}
 
+async def time_interval(bot,message):
+    while True:
+        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        await bot.send_message(BOT_DEVELOPER_CHAT_ID,current_time)
+        return
 
 async def get_indian_time():
     return datetime.now(timezone('Asia/Kolkata'))
@@ -810,9 +815,10 @@ async def update_activity_timestamp(chat_id):
         conn.commit()    
 
 
-async def main():
+async def main(bot,message):
     await create_tables()
     await create_total_users_table()
+    await time_interval(bot,message)    
     # Start the inactivity check loop
     while True:
         # await asyncio.sleep()  # Sleep for 60 seconds
