@@ -40,7 +40,7 @@ TOTAL_USERS_DATABASE_FILE = "total_users.db"
 # Define the dictionary to store user sessions in memory
 user_sessions = {}
 
-async def time_interval(bot,message):
+async def time_interval():
     while True:
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         await bot.send_message(BOT_DEVELOPER_CHAT_ID,current_time)
@@ -818,7 +818,7 @@ async def update_activity_timestamp(chat_id):
 async def main(bot,message):
     await create_tables()
     await create_total_users_table()
-    await time_interval(bot,message)    
+    await time_interval()    
     # Start the inactivity check loop
     while True:
         # await asyncio.sleep()  # Sleep for 60 seconds
@@ -826,5 +826,5 @@ async def main(bot,message):
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
-    loop.create_task(main(bot,message))
+    loop.create_task(main())
     bot.run()
