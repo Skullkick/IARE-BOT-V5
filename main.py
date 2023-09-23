@@ -826,5 +826,5 @@ async def main(bot,message):
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
-    loop.create_task(main())
+    loop.create_task(main(bot,message))
     bot.run()
