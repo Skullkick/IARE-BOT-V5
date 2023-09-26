@@ -231,8 +231,7 @@ async def perform_login(chat_id, username, password):
                 'headers': headers,
                 'username': username  # Save the username in the session data
             }
-            await store_user_session(chat_id, json.dumps(session_data))
-            # Store the username in the total_users database if it doesn't exist
+          
             await store_username(username)
             return session_data
         else:   
