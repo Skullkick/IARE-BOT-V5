@@ -693,7 +693,7 @@ async def reply_to_user(_,message):
 async def rshow(bot,message):
     chat_id = message.from_user.id
     requests = await load_allrequests()
-    if message.from_user.id != BOT_DEVELOPER_CHAT_ID or message.from_user.id != BOT_MAINTAINER_CHAT_ID:
+    if chat_id != BOT_DEVELOPER_CHAT_ID or chat_id != BOT_MAINTAINER_CHAT_ID:
         await bot.send_message(chat_id,text="You are not authorized to use this command.")
         return
 
@@ -703,7 +703,7 @@ async def rshow(bot,message):
     for request in requests:
         unique_id, user_id, message, chat_id = request
         request_message = f"New User Request from user ID {user_id} (Unique ID: {unique_id}):\n\n{message}"
-        await bot.send_message(chat_id=BOT_DEVELOPER_CHAT_ID, text=request_message)
+        await bot.send_message(BOT_DEVELOPER_CHAT_ID, text=request_message)
 
 @bot.on_message(filters.command(commands=['lusers']))
 async def list_users(bot,message):
