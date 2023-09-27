@@ -54,7 +54,8 @@ async def create_tables():
             CREATE TABLE IF NOT EXISTS sessions (
                 chat_id INTEGER PRIMARY KEY,
                 session_data TEXT,
-                last_activity TIMESTAMP
+                last_activity TIMESTAMP,
+                user_id TEXT
             )
         """)
         conn.commit()
