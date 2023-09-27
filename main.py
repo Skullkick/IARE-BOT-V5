@@ -684,7 +684,7 @@ async def reply_to_user(_,message):
         await bot.send_message(chat_id=developer_chat_id, text="Message sent successfully.")
 
         # Remove the used request data to prevent using the same ID again
-        del pending_requests[request_id]
+        await delete_request(request_id)
     except Exception as e:
         # Notify the developer if there was an error sending the message
         error_message = f"An error occurred while sending the message to the user: {e}"
