@@ -694,7 +694,7 @@ async def reply_to_user(_,message):
 async def rshow(bot,message):
     chat_id = message.from_user.id
     requests = await load_allrequests()
-    if chat_id != BOT_DEVELOPER_CHAT_ID or chat_id != BOT_MAINTAINER_CHAT_ID:
+    if message.chat.id != BOT_DEVELOPER_CHAT_ID and message.chat.id != BOT_MAINTAINER_CHAT_ID:
         await bot.send_message(chat_id,text="You are not authorized to use this command.")
         return
 
