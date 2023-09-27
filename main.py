@@ -813,7 +813,6 @@ async def logout_user(bot,chat_id):
 
 # Check inactivity
 async def check_inactivity():
-    print("Inactivity check 1 phase")
     # Get the Indian timezone
     indian_timezone = timezone('Asia/Kolkata')
 
@@ -835,7 +834,6 @@ async def check_inactivity():
                 print("Logging out")
                 # Log out the user and send a message
                 await logout_user(bot,chat_id)
-    print("reschedule timer")
     # Reschedule the check after 1 minute
     await asyncio.sleep(60)
     await check_inactivity()
