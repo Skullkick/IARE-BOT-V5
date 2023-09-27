@@ -732,10 +732,10 @@ async def total_users(_,message):
             await bot.send_message(message.chat.id,f"Total users: {total_count}")
 
 @bot.on_message(filters.command(commands=['rclear']))
-async def clean_pending_requests(message):
-    if message.chat.id== BOT_DEVELOPER_CHAT_ID or message.chat.id==BOT_MAINTAINER_CHAT_ID:
+async def clean_pending_requests(bot,message):
+    if message.chat.id == BOT_DEVELOPER_CHAT_ID or message.chat.id == BOT_MAINTAINER_CHAT_ID:
         await clear_requests()
-        await message.reply("Emptied the requests successfully")
+        await bot.send_message(BOT_DEVELOPER_CHAT_ID,"Emptied the requests successfully")
 
 @bot.on_message(filters.command(commands=['help']))
 async def help_command(bot,message):
