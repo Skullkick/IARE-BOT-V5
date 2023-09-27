@@ -37,8 +37,7 @@ DATABASE_FILE = "user_sessions.db"
 
 TOTAL_USERS_DATABASE_FILE = "total_users.db"
 
-# Define the dictionary to store user sessions in memory
-user_sessions = {}
+REQUESTS_DATABASE_FILE = "requests.db"
 
 
 async def get_indian_time():
@@ -118,6 +117,12 @@ async def load_user_session(chat_id):
                 return session_data
     return None
 
+async def load_username(chat_id):
+    with sqlite3.connect(DATABASE_FILE) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM sessions WHERE chat_id=?", (chat_id,))
+        row = cursor.fetchone()
+        return row
 
 async def delete_user_session(chat_id):
     """
@@ -139,6 +144,51 @@ async def clear_sessions_table():
         cursor = conn.cursor()
         cursor.execute("DELETE FROM sessions")
         conn.commit()
+
+async def create_requests_table():
+    with sqlite3.connect(REQUESTS_DATABASE_FILE) as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS pendingreq(
+                       unique_id TEXT PRIMARY KEY,
+                       user_id TEXT,
+                       message TEXT,
+                       chat_id INTEGER
+            )
+        """)
+        conn.commit()
+
+async def store_requests(unique_id, user_id, message, chat_id):
+    with sqlite3.connect(REQUESTS_DATABASE_FILE) as conn:
+        c = conn.cursor()
+        c.execute("INSERT INTO pendingreq (unique_id, user_id, message, chat_id) VALUES (?, ?, ?, ?)",
+                  (unique_id, user_id, message, chat_id))
+        conn.commit()
+
+async def load_requests(unique_id):
+    with sqlite3.connect(REQUESTS_DATABASE_FILE ) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM pendingreq WHERE unique_id=?",(unique_id,))
+        row = cursor.fetchone()
+        return row
+    
+async def load_allrequests():
+    with sqlite3.connect(REQUESTS_DATABASE_FILE) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM pendingreq")
+        all_messages = cursor.fetchall()
+        return all_messages
+
+async def delete_request(unique_id):
+    with sqlite3.connect(REQUESTS_DATABASE_FILE) as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM pendingreq WHERE unique_id=?",(unique_id,))
+
+async def clear_requests():
+    with sqlite3.connect(REQUESTS_DATABASE_FILE) as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM pendingreq")
+
 @bot.on_message(filters.command('reset'))
 async def reset_database(bot,message):
     if message.chat.id==BOT_DEVELOPER_CHAT_ID or message.chat.id==BOT_MAINTAINER_CHAT_ID:
@@ -231,8 +281,6 @@ async def perform_login(chat_id, username, password):
                 'headers': headers,
                 'username': username  # Save the username in the session data
             }
-          
-            await store_username(username)
             return session_data
         else:   
             return None
@@ -267,7 +315,7 @@ async def login(bot,message):
         await store_user_session(chat_id, json.dumps(session_data))  # Implement store_user_session function
 
         # # Set the session for the user and save the username
-        user_sessions[chat_id] = {'username': username}
+        await store_username(username)
 
         # Delete the login command message
         await message.delete()
@@ -288,9 +336,6 @@ async def logout(bot,message):
 
     # Remove the session data from the database
     await delete_user_session(chat_id)  # Implement delete_user_session function
-
-    if chat_id in user_sessions:
-        del user_sessions[chat_id]
 
     await message.reply("Logout successful.")
 
@@ -387,10 +432,10 @@ async def biometric(_,message):
     # Iterate over the rows and calculate days present and days absent
     for row in biorows:
         # Find the status cell in the row
-        status_cell = row.find_all('td', {'style': 'text-align:center;'})
+        cells = row.find_all('td')
 
-        # Extract the status text
-        status = [cell.get_text(strip=True) for cell in status_cell]
+        # Extract the status text from the appropriate cell (in this case, the last cell)
+        status = cells[6].get_text(strip=True)
 
         # Increment the respective counter based on the status
         if 'Present' in status:
@@ -445,14 +490,14 @@ async def sixhours(bot,message):
     # Iterate over the rows and calculate the 6 hours gap
     for row in biorows:
         # Find the status cell in the row
-        cell = row.find_all('td', {'style': 'text-align:center;'})
+        cell = row.find_all('td')
 
         # Extract the intime and outtime values from the row
-        intime = cell[5].text.strip()
-        outtime = cell[6].text.strip()
+        intime = cell[4].text.strip()
+        outtime = cell[5].text.strip()
 
         # Check if both intime and outtime are not empty (i.e., 0:00)
-        if intime and outtime and ":" in outtime:
+        if intime and outtime and ':' in intime and ':' in outtime:
             intimes.append(intime)
             outtimes.append(outtime)
 
@@ -554,8 +599,6 @@ async def bunk(bot,message):
     else:
         await message.reply("Data not found.")
 
-async def get_user_username(user_id):
-    return user_sessions.get(user_id, {}).get('username')
 async def generate_unique_id():
     """
     Generate a unique identifier using UUID version 4.
@@ -565,36 +608,34 @@ async def generate_unique_id():
     """
     return str(uuid.uuid4())
 
-pending_requests = {}
-
 @bot.on_message(filters.command(commands=['request']))
 async def request(bot,message):
-    user_id = message.from_user.id
+    chat_id = message.from_user.id
 
     # Check if the user is logged in
     # if not is_user_logged_in(user_id):
-    if not await load_user_session(user_id):
+    if not await load_user_session(chat_id):
         await message.reply("Please log in using the /login command.")
         return
 
     # Get the user's request message
     user_request = " ".join(message.text.split()[1:])
 
+    getuname = await load_username(chat_id)
     # Get the user's username
-    username = await get_user_username(user_id)
-
+    username = getuname[3]
     # Get the user's unique ID
     user_unique_id = await generate_unique_id()
 
     # Store the request in the data structure
-    pending_requests[user_unique_id] = {'user_id': user_id, 'username': username, 'request': user_request}
+    await store_requests(user_unique_id,username,user_request,chat_id)
 
     # Forward the user's request to the bot developer (you)
     forwarded_message = f"New User Request from @{username} (ID: {user_unique_id}):\n\n{user_request}"
     await bot.send_message(BOT_DEVELOPER_CHAT_ID,text=forwarded_message)
 
     # Send a confirmation message to the user
-    await bot.send_message(user_id,"Thank you for your request! Your message has been forwarded to the developer.")
+    await bot.send_message(chat_id,"Thank you for your request! Your message has been forwarded to the developer.")
 
 
 @bot.on_message(filters.command(commands=['reply']))
@@ -618,16 +659,15 @@ async def reply_to_user(_,message):
     unique_id_start_index = reply_text.find(unique_id_keyword) + len(unique_id_keyword)
     unique_id_end_index = reply_text.find(")", unique_id_start_index)
     request_id = reply_text[unique_id_start_index:unique_id_end_index].strip()
-
+    pending_requests = await load_requests(request_id)
     # Check if the extracted unique ID is valid
     if request_id not in pending_requests:
         await message.reply("Invalid or unknown unique ID.")
         return
 
-    # Get the user's chat ID and username from the request data
-    user_chat_id = pending_requests[request_id]['user_id']
-    username = pending_requests[request_id]['username']
 
+    # Get the user's chat ID and username from the request data
+    user_chat_id = pending_requests[3]
     # Get the developer's reply message
     developer_reply = message.text.split("/reply", 1)[1].strip()
 
@@ -652,18 +692,19 @@ async def reply_to_user(_,message):
 @bot.on_message(filters.command(commands=['rshow']))
 async def rshow(bot,message):
     chat_id = message.from_user.id
-    if message.from_user.id != BOT_DEVELOPER_CHAT_ID and message.chat.id != BOT_MAINTAINER_CHAT_ID:
+    requests = await load_allrequests()
+    if message.from_user.id != BOT_DEVELOPER_CHAT_ID or message.from_user.id != BOT_MAINTAINER_CHAT_ID:
         await bot.send_message(chat_id,text="You are not authorized to use this command.")
         return
 
-    if not pending_requests:
+    if len(requests) == 0:
         await bot.send_message(chat_id,text="There are no pending requests.")
         return
+    for request in requests:
+        unique_id, user_id, message, chat_id = request
+        request_message = f"New User Request from user ID {user_id} (Unique ID: {unique_id}):\n\n{message}"
+        await bot.send_message(chat_id=BOT_DEVELOPER_CHAT_ID, text=request_message)
 
-
-    for request_id, request in pending_requests.items():
-        request_message = f"New User Request from @{request['username']} (ID: {request_id}):\n\n{request['request']}"
-        await bot.send_message(chat_id, text=request_message)
 @bot.on_message(filters.command(commands=['lusers']))
 async def list_users(bot,message):
     if message.from_user.id == BOT_DEVELOPER_CHAT_ID or message.chat.id==BOT_MAINTAINER_CHAT_ID:
@@ -691,9 +732,9 @@ async def total_users(_,message):
             await bot.send_message(message.chat.id,f"Total users: {total_count}")
 
 @bot.on_message(filters.command(commands=['rclear']))
-async def clean_pending_requests(bot,message):
+async def clean_pending_requests(message):
     if message.chat.id== BOT_DEVELOPER_CHAT_ID or message.chat.id==BOT_MAINTAINER_CHAT_ID:
-        pending_requests.clear()
+        await clear_requests()
         await message.reply("Emptied the requests successfully")
 
 @bot.on_message(filters.command(commands=['help']))
@@ -766,8 +807,6 @@ async def logout_user(bot,chat_id):
 
     # Remove the session data from the database and the in-memory dictionary
     await delete_user_session(chat_id)
-    if chat_id in user_sessions:
-        del user_sessions[chat_id]
 
     # Notify the user that they have been logged out due to inactivity
     await bot.send_message(chat_id, text="Your session has been logged out due to inactivity.")
