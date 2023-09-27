@@ -74,7 +74,7 @@ async def create_total_users_table():
         """)
         conn.commit()
 #Function to store the session data
-async def store_user_session(chat_id, session_data):
+async def store_user_session(chat_id, session_data, user_id):
     """
     Store the user session data in the SQLite database.
 
@@ -88,8 +88,8 @@ async def store_user_session(chat_id, session_data):
         # Get the current time in the Indian time zone
         current_time = await get_indian_time()
         # Execute the SQL query to insert or replace the session data
-        cursor.execute("INSERT OR REPLACE INTO sessions (chat_id, session_data, last_activity) VALUES (?, ?, ?)",
-                       (chat_id, session_data, current_time))
+        cursor.execute("INSERT OR REPLACE INTO sessions (chat_id, session_data, last_activity, user_id) VALUES (?, ?, ?, ?)",
+                       (chat_id, session_data, current_time, user_id))
         
         conn.commit()
 #Function to store the usernames
@@ -313,7 +313,7 @@ async def login(bot,message):
 
     if session_data:
         # Store the session data in the database
-        await store_user_session(chat_id, json.dumps(session_data))  # Implement store_user_session function
+        await store_user_session(chat_id, json.dumps(session_data), username)  # Implement store_user_session function
 
         # # Set the session for the user and save the username
         await store_username(username)
