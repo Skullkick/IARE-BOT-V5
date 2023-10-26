@@ -404,15 +404,14 @@ async def biometric(_,message):
         await bot.send_message(chat_id,"Please log in using the /login command.")
         return
 
-    # Access the biometric page and retrieve the content
     biometric_url = 'https://samvidha.iare.ac.in/home?action=std_bio'
     with requests.Session() as s:
-        # Set the session cookies and headers
+
         cookies = session_data['cookies']
         s.cookies.update(cookies)
         headers = session_data['headers']
         await update_activity_timestamp(chat_id)
-        # Send GET request to the biometric page
+
         response = s.get(biometric_url, headers=headers)
 
         # Parse the HTML content using BeautifulSoup
@@ -427,7 +426,6 @@ async def biometric(_,message):
     days_absent = 0
     total_days = 0
 
-    # Find all table rows (tr elements) within the table body
     biorows = biotable.find_all('tr')
 
     # Iterate over the rows and calculate days present and days absent
@@ -443,7 +441,7 @@ async def biometric(_,message):
             days_present += 1
         elif 'Absent' in status:
             days_absent += 1
-        total_days = days_present + days_absent
+    total_days = days_present + days_absent
         # total_days += 1
 
     # Calculate the biometric percentage
@@ -451,82 +449,33 @@ async def biometric(_,message):
     biometric_percentage = round(biometric_percentage,3)
     # Prepare the biometric message
     biometric_msg = f"Number of Days Present: {days_present}\nNumber of Days Absent: {days_absent}\nTotal Number of Days: {total_days}\nBiometric Percentage: \n{biometric_percentage}%"
-    six_hours_message = await sixhours(bot, message)  
-    # Append the six hours message to the biometric message
-    biometric_msg += "\n" + six_hours_message   
-    await bot.send_message(chat_id,text=biometric_msg)
-
-async def sixhours(bot,message):
-    chat_id = message.chat.id
-    session_data = await load_user_session(chat_id)
-    # Access the biometric page and retrieve the content
-    biometric_url = 'https://samvidha.iare.ac.in/home?action=std_bio'
-    with requests.Session() as s:
-        # Set the session cookies and headers
-        cookies = session_data['cookies']
-        s.cookies.update(cookies)
-        headers = session_data['headers']
-
-        # Send GET request to the biometric page
-        response = s.get(biometric_url, headers=headers)
-
-        # Parse the HTML content using BeautifulSoup
-        biodata = BeautifulSoup(response.text, 'html.parser')
-
-    # Find the biometric table
-    biotable = biodata.find('tbody')
-
-    # Calculate the biometric data and 6 hours gap information
     intimes = []
     outtimes = []
     time_gap_more_than_six_hours = 0
-    total_days = 0
     sixintime = []
     sixoutime = []
-
-    # Find all table rows (tr elements) within the table body
-    biorows = biotable.find_all('tr')
-
-    # Iterate over the rows and calculate the 6 hours gap
     for row in biorows:
-        # Find the status cell in the row
         cell = row.find_all('td')
-
-        # Extract the intime and outtime values from the row
         intime = cell[4].text.strip()
         outtime = cell[5].text.strip()
-
-        # Check if both intime and outtime are not empty (i.e., 0:00)
         if intime and outtime and ':' in intime and ':' in outtime:
             intimes.append(intime)
             outtimes.append(outtime)
-
-            # Calculate the time difference in minutes
             intime_hour, intime_minute = intime.split(':')
             outtime_hour, outtime_minute = outtime.split(':')
             time_difference = (int(outtime_hour) - int(intime_hour)) * 60 + (int(outtime_minute) - int(intime_minute))
-
-            # Check if the time difference is more than 6 hours and increment the counter
             if time_difference >= 360:
                 time_gap_more_than_six_hours += 1
-        total_days+=1
         sixintime.append(intime)
-        # print("intime:",sixintime)
         sixoutime.append(outtime)
-        # print("outtime:",sixoutime)
-
-    # Calculate the 6 hours gap percentage
     six_percentage = (time_gap_more_than_six_hours / total_days) * 100 if total_days != 0 else 0
     six_percentage = round(six_percentage, 3)
-
-    # Prepare the six hours gap message
-    six_message = f"biometric Percentage(6 hours gap):\n{six_percentage}%"
+    biometric_msg += f"\nbiometric Percentage(6 hours gap):\n{six_percentage}%"
     if sixintime and sixintime[0] :
         next_biometric_time = datetime.strptime(sixintime[0], "%H:%M") + timedelta(hours=6)
         next_biometric_time_str = next_biometric_time.strftime("%H:%M")
-        six_message += f"\nBiometric should be kept again at: {next_biometric_time_str}"
-
-    return six_message
+        biometric_msg += f"\nBiometric should be kept again at: {next_biometric_time_str}"
+    await bot.send_message(chat_id,text=biometric_msg)
 
 @bot.on_message(filters.command(commands=['bunk']))
 async def bunk(bot,message):
