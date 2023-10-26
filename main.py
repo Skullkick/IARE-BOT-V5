@@ -522,7 +522,7 @@ async def sixhours(bot,message):
 
     # Prepare the six hours gap message
     six_message = f"biometric Percentage(6 hours gap):\n{six_percentage}%"
-    if sixintime and sixintime[0] and sixoutime and sixoutime[0] == '00:00':
+    if sixintime and sixintime[0] :
         next_biometric_time = datetime.strptime(sixintime[0], "%H:%M") + timedelta(hours=6)
         next_biometric_time_str = next_biometric_time.strftime("%H:%M")
         six_message += f"\nBiometric should be kept again at: {next_biometric_time_str}"
