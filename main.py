@@ -445,7 +445,9 @@ async def biometric(_,message):
             days_absent += 1
 
         # Increment the total days counter for each row
-        total_days += 1
+        if 'Present' or 'Absent' in status:
+                total_days += 1
+        # total_days += 1
 
     # Calculate the biometric percentage
     biometric_percentage = (days_present / total_days) * 100 if total_days != 0 else 0
