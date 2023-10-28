@@ -294,8 +294,6 @@ async def login(bot,message):
     chat_id = message.chat.id
     # command_args = message.get_args().split()
     command_args = message.text.split()[1:]
-    print("Login phase")
-
     # if await is_user_logged_in(chat_id):  # Implement is_user_logged_in function
     if await load_user_session(chat_id):
         await message.reply("You are already logged in.")
