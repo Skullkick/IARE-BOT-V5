@@ -693,7 +693,7 @@ async def help_command(bot,message):
     chat_id = message.chat.id
     help_msg = """Available commands:
 
-    /login {username} {password} - Log in with your credentials.
+    /login username password - Log in with your credentials.
 
     /attendance - View your attendance details.
 
