@@ -381,14 +381,19 @@ async def attendance(bot,message):
 
             # Add the row data to the main table data list
             table_data.append(row_data)
-
+        sum_attendance = 0
+        count_att = 0
         # Prepare individual messages for each course
         for row in table_data[0:]:
             course_name = row[2]
             attendance_percentage = row[7]
             if course_name and attendance_percentage:
                 att_msg = f"Course: {course_name}, Attendance: {attendance_percentage}"
+                sum_attendance += attendance_percentage
+                count_att += 1 
                 await bot.send_message(chat_id,att_msg)
+        aver_attendance = f"Overall course attendance: {round(sum_attendance/count_att, 2)}"
+        await bot.send_message(chat_id,aver_attendance)
 
     else:
         await bot.send_message(chat_id,"Attendance data not found.")
