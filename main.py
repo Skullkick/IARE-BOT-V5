@@ -390,7 +390,8 @@ async def attendance(bot,message):
             if course_name and attendance_percentage:
                 att_msg = f"Course: {course_name}, Attendance: {attendance_percentage}"
                 sum_attendance += float(attendance_percentage)
-                count_att += 1 
+                if float(attendance_percentage) > 0:
+                        count_att += 1
                 await bot.send_message(chat_id,att_msg)
         aver_attendance = f"Overall course attendance: {round(sum_attendance/count_att, 2)}"
         await bot.send_message(chat_id,aver_attendance)
