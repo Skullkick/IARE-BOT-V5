@@ -481,21 +481,21 @@ async def biometric(_,message):
         #biometric_msg += f"\nBiometric should be kept again at: {next_biometric_time_str}"
     biometric_msg = f"""
     ```Biometric
-    ⫷
+⫷
 
-    ● Total Days             -  {total_days}
+● Total Days             -  {total_days}
                 
-    ● Days Present           -  {days_present}  
+● Days Present           -  {days_present}  
             
-    ● Days Absent            -  {days_absent}
+● Days Absent            -  {days_absent}
                 
-    ● Biometric %            -  {biometric_percentage}  
+● Biometric %            -  {biometric_percentage}  
             
-    ● Biometric % (6h gap)   -  {six_percentage}
+● Biometric % (6h gap)   -  {six_percentage}
 
-    ● Evening Biometric Time  -  {next_biometric_time_str}
+● Evening Biometric Time  -  {next_biometric_time_str}
 
-    ⫸
+⫸
 
     @iare_unofficial_bot
     ```
