@@ -452,7 +452,7 @@ async def biometric(_,message):
     biometric_percentage = (days_present / total_days) * 100 if total_days != 0 else 0
     biometric_percentage = round(biometric_percentage,3)
     # Prepare the biometric message
-    biometric_msg = f"Number of Days Present: {days_present}\nNumber of Days Absent: {days_absent}\nTotal Number of Days: {total_days}\nBiometric Percentage: \n{biometric_percentage}%"
+    #biometric_msg = f"Number of Days Present: {days_present}\nNumber of Days Absent: {days_absent}\nTotal Number of Days: {total_days}\nBiometric Percentage: \n{biometric_percentage}%"
     intimes = []
     outtimes = []
     time_gap_more_than_six_hours = 0
@@ -474,11 +474,32 @@ async def biometric(_,message):
         sixoutime.append(outtime)
     six_percentage = (time_gap_more_than_six_hours / total_days) * 100 if total_days != 0 else 0
     six_percentage = round(six_percentage, 3)
-    biometric_msg += f"\nbiometric Percentage(6 hours gap):\n{six_percentage}%"
+    #biometric_msg += f"\nbiometric Percentage(6 hours gap):\n{six_percentage}%"
     if sixintime and sixintime[0] :
         next_biometric_time = datetime.strptime(sixintime[0], "%H:%M") + timedelta(hours=6)
         next_biometric_time_str = next_biometric_time.strftime("%H:%M")
-        biometric_msg += f"\nBiometric should be kept again at: {next_biometric_time_str}"
+        #biometric_msg += f"\nBiometric should be kept again at: {next_biometric_time_str}"
+    biometric_msg = f"""
+    ```Biometric
+⫷
+
+● Total Days             -  {total_days}
+                
+● Days Present           -  {days_present}  
+            
+● Days Absent            -  {days_absent}
+                
+● Biometric %            -  {biometric_percentage}  
+            
+● Biometric % (6h gap)   -  {six_percentage}
+
+● Evening Biometric Time  -  {next_biometric_time_str}
+
+⫸
+
+    @iare_unofficial_bot
+    ```
+    """
     await bot.send_message(chat_id,text=biometric_msg)
 
 @bot.on_message(filters.command(commands=['bunk']))
