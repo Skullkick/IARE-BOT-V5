@@ -475,11 +475,12 @@ async def biometric(_,message):
     six_percentage = (time_gap_more_than_six_hours / total_days) * 100 if total_days != 0 else 0
     six_percentage = round(six_percentage, 3)
     #biometric_msg += f"\nbiometric Percentage(6 hours gap):\n{six_percentage}%"
+    next_biometric_time = "None"
     if sixintime and sixintime[0] :
         next_biometric_time = datetime.strptime(sixintime[0], "%H:%M") + timedelta(hours=6)
         next_biometric_time_str = next_biometric_time.strftime("%H:%M")
         #biometric_msg += f"\nBiometric should be kept again at: {next_biometric_time_str}"
-    if next_biometric_time_str is not None:
+    if next_biometric_time != "None":
             biometric_msg = f"""
     ```Biometric
 ⫷
