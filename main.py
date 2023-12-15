@@ -479,7 +479,7 @@ async def biometric(_,message):
         next_biometric_time = datetime.strptime(sixintime[0], "%H:%M") + timedelta(hours=6)
         next_biometric_time_str = next_biometric_time.strftime("%H:%M")
         #biometric_msg += f"\nBiometric should be kept again at: {next_biometric_time_str}"
-    if next_biometric_time_str:
+    if next_biometric_time_str is None:
             biometric_msg = f"""
     ```Biometric
 ⫷
