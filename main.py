@@ -438,7 +438,7 @@ async def biometric(_,message):
         cells = row.find_all('td')
 
         # Extract the status text from the appropriate cell (in this case, the last cell)
-        status = cells[6].get_text(strip=True)
+        status = cells[9].get_text(strip=True)
 
         # Increment the respective counter based on the status
         if 'Present' in status:
@@ -460,8 +460,8 @@ async def biometric(_,message):
     sixoutime = []
     for row in biorows:
         cell = row.find_all('td')
-        intime = cell[4].text.strip()
-        outtime = cell[5].text.strip()
+        intime = cell[7].text.strip()
+        outtime = cell[8].text.strip()
         if intime and outtime and ':' in intime and ':' in outtime:
             intimes.append(intime)
             outtimes.append(outtime)
@@ -479,11 +479,9 @@ async def biometric(_,message):
         next_biometric_time = datetime.strptime(sixintime[0], "%H:%M") + timedelta(hours=6)
         next_biometric_time_str = next_biometric_time.strftime("%H:%M")
         #biometric_msg += f"\nBiometric should be kept again at: {next_biometric_time_str}"
-    if next_biometric_time_str is not None:
-            biometric_msg = f"""
+    biometric_msg = f"""
     ```Biometric
 ⫷
-
 ● Total Days             -  {total_days}
                 
 ● Days Present           -  {days_present}  
@@ -493,33 +491,9 @@ async def biometric(_,message):
 ● Biometric %            -  {biometric_percentage}  
             
 ● Biometric % (6h gap)   -  {six_percentage}
-
-● Evening Biometric Time  -  {next_biometric_time_}
-
+● Evening Biometric Time  -  {next_biometric_time_str}
 ⫸
-
-@iare_unofficial_bot
-    ```
-    """
-    else:
-        biometric_msg = f"""
-    ```Biometric
-⫷
-
-● Total Days             -  {total_days}
-                
-● Days Present           -  {days_present}  
-            
-● Days Absent            -  {days_absent}
-                
-● Biometric %            -  {biometric_percentage}  
-            
-● Biometric % (6h gap)   -  {six_percentage}
-
-
-⫸
-
-@iare_unofficial_bot
+    @iare_unofficial_bot
     ```
     """
     await bot.send_message(chat_id,text=biometric_msg)
