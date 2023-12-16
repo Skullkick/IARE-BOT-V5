@@ -358,10 +358,11 @@ async def attendance(bot,message):
 
         # Send GET request to the attendance or bunk page
         attendance_response = s.get(attendance_url)
-
     # Parse the HTML content using BeautifulSoup
     data = BeautifulSoup(attendance_response.text, 'html.parser')
-
+    if 	'<title>Samvidha - Campus Management Portal - IARE</title>' in attendance_response.text:
+        await logout_user(bot,chat_id)
+        return
     # Find the table element
     table_all = data.find_all('table', class_='table table-striped table-bordered table-hover table-head-fixed responsive')
     if len(table_all) > 1:
@@ -421,6 +422,9 @@ async def biometric(_,message):
         # Parse the HTML content using BeautifulSoup
         biodata = BeautifulSoup(response.text, 'html.parser')
     biotable = biodata.find('tbody')
+    if 	'<title>Samvidha - Campus Management Portal - IARE</title>' in response.text:
+        await logout_user(bot,chat_id)
+        return
     if not biotable:
         await message.reply("Biometric data not found.")
         return
@@ -546,7 +550,9 @@ async def bunk(bot,message):
 
     # Parse the HTML content using BeautifulSoup
     data = BeautifulSoup(attendance_response.text, 'html.parser')
-
+    if 	'<title>Samvidha - Campus Management Portal - IARE</title>' in attendance_response.text:
+        await logout_user(bot,chat_id)
+        return
     # Find the table element
     table_all = data.find_all('table', class_='table table-striped table-bordered table-hover table-head-fixed responsive')
     if len(table_all) > 1:
