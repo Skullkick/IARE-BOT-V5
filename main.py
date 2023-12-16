@@ -482,6 +482,7 @@ async def biometric(_,message):
     biometric_msg = f"""
     ```Biometric
 ⫷
+
 ● Total Days             -  {total_days}
                 
 ● Days Present           -  {days_present}  
@@ -491,9 +492,12 @@ async def biometric(_,message):
 ● Biometric %            -  {biometric_percentage}  
             
 ● Biometric % (6h gap)   -  {six_percentage}
+
 ● Evening Biometric Time  -  {next_biometric_time_str}
+
 ⫸
-    @iare_unofficial_bot
+
+@iare_unofficial_bot
     ```
     """
     await bot.send_message(chat_id,text=biometric_msg)
