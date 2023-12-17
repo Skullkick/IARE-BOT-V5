@@ -13,6 +13,8 @@ import pyqrcode
 import os
 import png
 import asyncio
+import mysql.connector
+import httpx
 
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
@@ -230,7 +232,7 @@ async def get_random_greeting(bot,message):
 
     # Send the greeting to the user
     await message.reply(greeting)
-async def perform_login(chat_id, username, password):
+async def perform_login(chat_id, username, password,option=None):
     """
     Perform login with the provided username and password.
 
@@ -258,6 +260,30 @@ async def perform_login(chat_id, username, password):
         'username': username,
         'password': password,
     }
+    if option == "/save":
+        # Save login data if the "/save" option is provided
+            perform_login(username, password)
+
+    # Erase login data after 5 minutes
+    if option != "/save":
+        await asyncio.sleep(300)
+
+    login_response = await login_api(headers, cookies, data)
+    
+    if option != "/save":
+        await asyncio.sleep(300)
+
+    async def login_api(headers, cookies, data):
+
+    # Replace the following with your actual code to make a login request
+    # using the provided headers, cookies, and data.
+    # This is just a placeholder example.
+    
+
+        url = "https://samvidha.iare.ac.in/login"
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, headers=headers, cookies=cookies, data=data)
+            return response
 
     with requests.Session() as s:
         # Send GET request to the index page to capture the PHPSESSID cookie
