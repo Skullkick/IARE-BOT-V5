@@ -387,15 +387,35 @@ async def attendance(bot,message):
         # Prepare individual messages for each course
         for row in table_data[0:]:
             course_name = row[2]
+            conducted = row[5]
+            attended = row[6]
             attendance_percentage = row[7]
+            attendance_status = row[8]
             if course_name and attendance_percentage:
-                att_msg = f"Course: {course_name}, Attendance: {attendance_percentage}"
+                att_msg = f"""
+```{course_name}
+⫷
+
+● Conducted         -  {conducted}
+             
+● Attended          -  {attended}  
+         
+● Attendance %      -  {attendance_percentage} 
+            
+● Status            -  {attendance_status}  
+         
+⫸
+
+```
+"""
+                # att_msg = f"Course: {course_name}, Attendance: {attendance_percentage}"
                 sum_attendance += float(attendance_percentage)
                 if float(attendance_percentage) > 0:
                         count_att += 1
                 await bot.send_message(chat_id,att_msg)
-        aver_attendance = f"Overall course attendance: {round(sum_attendance/count_att, 2)}"
-        await bot.send_message(chat_id,aver_attendance)
+        aver_attendance = round(sum_attendance/count_att, 2)
+        over_all_attendance = f"**Overall Attendance is {aver_attendance}"
+        await bot.send_message(chat_id,over_all_attendance)
 
     else:
         await bot.send_message(chat_id,"Attendance data not found.")
@@ -583,21 +603,54 @@ async def bunk(bot,message):
                 attendance_threshold = 75
                 total_classes = int(row[5])
                 attended_classes = int(row[6])
+                attendance_status = row[8]
                 classes_bunked = 0
+                
                 if attendance_present >= attendance_threshold:
                     classes_bunked = 0
                     while (attended_classes / (total_classes + classes_bunked)) * 100 >= attendance_threshold:
                         classes_bunked += 1
-                    bunk_can_msg = f"{course_name}: {attendance_percentage}% (Can bunk {classes_bunked} classes)" 
+                    # bunk_can_msg = f"{course_name}: {attendance_percentage}% (Can bunk {classes_bunked} classes)"
                     await bot.send_message(chat_id,bunk_can_msg)
+                    bunk_can_msg = f"""
+```{course_name}
+⫷
+
+● Attendance  -  {attendance_percentage}
+
+● You can bunk {classes_bunked} classes
+
+⫸
+
+```
+"""
+                    await bot.send_message(chat_id,bunk_can_msg)
+                  
+                    
                 else:
                     classes_needattend = 0
                     while((attended_classes + classes_needattend) / (total_classes + classes_needattend)) * 100 < attendance_threshold:
                         classes_needattend += 1
-                    bunk_cannot_msg = f"{course_name}:Attendance below 75%"
-                    bunk_recover_msg = f"{course_name}: Attend {classes_needattend} classes for 75%"
-                    await bot.send_message(chat_id,bunk_cannot_msg)
-                    await bot.send_message(chat_id,bunk_recover_msg)
+                    # bunk_cannot_msg = f"{course_name}:Attendance below 75%"
+                    # bunk_recover_msg = f"{course_name}: Attend {classes_needattend} classes for 75%"
+                    # await bot.send_message(chat_id,bunk_cannot_msg)
+                    
+                    bunk_recover_msg = f"""
+```{course_name}
+⫷
+
+● Attendance  -  Below 75%
+
+● Attend  {classes_needattend} classes for 75%
+
+● No Bunk Allowed
+
+⫸
+
+```
+"""
+                  await bot.send_message(chat_id,bunk_recover_msg)
+              
     else:
         await message.reply("Data not found.")
 
