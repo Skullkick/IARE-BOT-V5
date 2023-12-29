@@ -605,16 +605,19 @@ async def bunk(bot,message):
                 
                 if attendance_present >= attendance_threshold:
                     classes_bunked = 0
-                    while (attended_classes // (total_classes + classes_bunked)) * 100 >= attendance_threshold:
+                    while (attended_classes / (total_classes + classes_bunked)) * 100 >= attendance_threshold:
                         classes_bunked += 1
                     # bunk_can_msg = f"{course_name}: {attendance_percentage}% (Can bunk {classes_bunked} classes)"
                     #await bot.send_message(chat_id,bunk_can_msg)
                     bunk_can_msg = f"""
 ```{course_name}
+⫷
 
 ● Attendance  -  {attendance_percentage}
 
 ● You can bunk {classes_bunked} classes
+
+⫸
 
 ```
 """
@@ -623,7 +626,7 @@ async def bunk(bot,message):
                     
                 else:
                     classes_needattend = 0
-                    while((attended_classes + classes_needattend) // (total_classes + classes_needattend)) * 100 < attendance_threshold:
+                    while((attended_classes + classes_needattend) / (total_classes + classes_needattend)) * 100 < attendance_threshold:
                         classes_needattend += 1
                     # bunk_cannot_msg = f"{course_name}:Attendance below 75%"
                     # bunk_recover_msg = f"{course_name}: Attend {classes_needattend} classes for 75%"
