@@ -607,8 +607,10 @@ async def bunk(bot,message):
                     classes_bunked = 0
                     while (attended_classes / (total_classes + classes_bunked)) * 100 >= attendance_threshold:
                         classes_bunked += 1
+
                     # bunk_can_msg = f"{course_name}: {attendance_percentage}% (Can bunk {classes_bunked} classes)"
                     #await bot.send_message(chat_id,bunk_can_msg)
+                    classes_bunked -= 1
                     bunk_can_msg = f"""
 ```{course_name}
 ⫷
@@ -621,6 +623,7 @@ async def bunk(bot,message):
 
 ```
 """
+
                     await bot.send_message(chat_id,bunk_can_msg)
                   
                     
