@@ -14,23 +14,21 @@ import png
 import asyncio
 
 
-# BOT_TOKEN = os.environ.get("BOT_TOKEN")
-# API_ID = os.environ.get("API_ID")
-# API_HASH = os.environ.get("API_HASH")
-# BOT_DEVELOPER_CHAT_ID_re = os.environ.get("DEVELOPER_CHAT_ID")
-# BOT_MAINTAINER_CHAT_ID_re = os.environ.get("MAINTAINER_CHAT_ID")
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
+API_ID = os.environ.get("API_ID")
+API_HASH = os.environ.get("API_HASH")
+BOT_DEVELOPER_CHAT_ID_re = os.environ.get("DEVELOPER_CHAT_ID")
+BOT_MAINTAINER_CHAT_ID_re = os.environ.get("MAINTAINER_CHAT_ID")
 bot = Client(
-    name='trailbot',
-    bot_token='6870109187:AAGIuaY8LWXCf6qu8ZCQoRwU1AC32QbGfKM',
-    api_id=23443547,
-    api_hash='e59d1ee565307df8a9a7652700462be5'
+    "IARE BOT",
+    bot_token = BOT_TOKEN,
+    api_id = API_ID,
+    api_hash = API_HASH
 )
-
 #Bot Devoloper ID
-BOT_DEVELOPER_CHAT_ID = int(1021583075)
+BOT_DEVELOPER_CHAT_ID = int(BOT_DEVELOPER_CHAT_ID_re)
 #Bot Maintainer ID
-BOT_MAINTAINER_CHAT_ID = int(1021583075)
-
+BOT_MAINTAINER_CHAT_ID = int(BOT_MAINTAINER_CHAT_ID_re)
 # SQLite database file
 DATABASE_FILE = "user_sessions.db"
 
