@@ -1,4 +1,3 @@
-
 import time
 import requests
 import uuid
@@ -15,22 +14,22 @@ import png
 import asyncio
 
 
-BOT_TOKEN = os.environ.get("BOT_TOKEN")
-API_ID = os.environ.get("API_ID")
-API_HASH = os.environ.get("API_HASH")
-BOT_DEVELOPER_CHAT_ID_re = os.environ.get("DEVELOPER_CHAT_ID")
-BOT_MAINTAINER_CHAT_ID_re = os.environ.get("MAINTAINER_CHAT_ID")
+# BOT_TOKEN = os.environ.get("BOT_TOKEN")
+# API_ID = os.environ.get("API_ID")
+# API_HASH = os.environ.get("API_HASH")
+# BOT_DEVELOPER_CHAT_ID_re = os.environ.get("DEVELOPER_CHAT_ID")
+# BOT_MAINTAINER_CHAT_ID_re = os.environ.get("MAINTAINER_CHAT_ID")
 bot = Client(
-        "IARE BOT",
-        bot_token = BOT_TOKEN,
-        api_id = API_ID,
-        api_hash = API_HASH
+    name='trailbot',
+    bot_token='6870109187:AAGIuaY8LWXCf6qu8ZCQoRwU1AC32QbGfKM',
+    api_id=23443547,
+    api_hash='e59d1ee565307df8a9a7652700462be5'
 )
 
 #Bot Devoloper ID
-BOT_DEVELOPER_CHAT_ID = int(BOT_DEVELOPER_CHAT_ID_re)
+BOT_DEVELOPER_CHAT_ID = int(1021583075)
 #Bot Maintainer ID
-BOT_MAINTAINER_CHAT_ID = int(BOT_MAINTAINER_CHAT_ID_re)
+BOT_MAINTAINER_CHAT_ID = int(1021583075)
 
 # SQLite database file
 DATABASE_FILE = "user_sessions.db"
@@ -333,7 +332,10 @@ async def logout(bot,message):
         await bot.send_message(chat_id,text="Please log in using the /login command.")
         return
 
-    # Remove the session data from the database
+    logout_url = 'https://samvidha.iare.ac.in/logout'
+    session_data = await load_user_session(chat_id)
+    cookies,headers = session_data['cookies'], session_data['headers']
+    requests.get(logout_url, cookies=cookies, headers=headers)
     await delete_user_session(chat_id)  # Implement delete_user_session function
 
     await message.reply("Logout successful.")
@@ -850,12 +852,6 @@ async def help_command(bot,message):
 
 # Logout user and send a message
 async def logout_user(bot,chat_id):
-    """
-    Log out the user and send a message.
-
-    Parameters:
-        chat_id (int): The chat ID of the user.
-    """
     session_data = await load_user_session(chat_id)
     if not session_data or 'cookies' not in session_data or 'headers' not in session_data:
         return
