@@ -11,3 +11,6 @@ PyQRCode==1.2.1
 pyrogram==2.0.106
 tgcrypto==1.2.5
 
+JS Requirements From npm:
+'@adobe/pdfservices-node-sdk'
+
