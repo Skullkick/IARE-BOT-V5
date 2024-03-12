@@ -2,7 +2,7 @@ const PDFServicesSdk = require('@adobe/pdfservices-node-sdk');
 const fs = require("fs");
 const path = require("path");
 
-function pdfCompression(filePath, fileName) {
+function pdfCompression(filePath, chatID) {
     try {
         // Credential Verification Adobe Object.
         const credentials =  PDFServicesSdk.Credentials
@@ -27,7 +27,7 @@ function pdfCompression(filePath, fileName) {
         compressPDFOperation.setOptions(compressionOptions);
 
         // Creating The Output File Path.
-        const outputFilePath = path.join(__dirname, `${fileName}-comp.pdf`);
+        const outputFilePath = path.join(__dirname, `${chatID}-comp.pdf`);
 
         // Executing The Operation And Logging Errors.
         const logFilePath = path.join(__dirname, "errors.log");
@@ -62,13 +62,13 @@ function pdfCompression(filePath, fileName) {
 
 // Check if enough arguments are passed
 if (process.argv.length < 4) {
-    console.error("Usage: node script.js <pdfFilePath> <fileName>");
+    console.error("Usage: node script.js <pdfFilePath> <chatID>");
     process.exit(1);
 }
 
 // Extracting command-line arguments
 const pdfFilePath = process.argv[2];
-const fileName = process.argv[3];
+const chatID = process.argv[3];
 
 // Call the pdfCompression function with command-line arguments
-pdfCompression(pdfFilePath, fileName);
+pdfCompression(pdfFilePath, chatID);
