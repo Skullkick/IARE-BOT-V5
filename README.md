@@ -18,7 +18,7 @@ Telegram Bot which scrapes the data from the [SAMVIDHA](https://samvidha.iare.ac
 ## LOCAL DEPLOY
 1. Clone the repository.
    ```
-   git clone https://github.com/Sathvik2005/IARE-BOT-V5
+   git clone https://github.com/Skullkick/IARE-BOT-V5
    ```
 2. Enter the directory.
    ```
