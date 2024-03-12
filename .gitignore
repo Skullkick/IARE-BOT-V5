@@ -1,2 +1,6 @@
 /pdfs
-
+package-lock.json
+package.json
+/node_modules
+*.log
+pdf_compression.js
