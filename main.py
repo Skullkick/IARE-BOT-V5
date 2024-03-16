@@ -459,7 +459,7 @@ async def biometric(_,message):
         cells = row.find_all('td')
 
         # Extract the status text from the appropriate cell (in this case, the last cell)
-        status = cells[7].get_text(strip=True)
+        status = cells[7].split('>')[1].split('</')[0].strip()
 
         # Increment the respective counter based on the status
         if 'Present' in status:
@@ -481,8 +481,8 @@ async def biometric(_,message):
     sixoutime = []
     for row in biorows:
         cell = row.find_all('td')
-        intime = cell[5].text.strip()
-        outtime = cell[6].text.strip()
+        intime = cells[5].split('>')[1].split('</')[0].strip()
+        outtime = cells[6].split('>')[1].split('</')[0].strip()
         if intime and outtime and ':' in intime and ':' in outtime:
             intimes.append(intime)
             outtimes.append(outtime)
