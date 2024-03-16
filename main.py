@@ -436,114 +436,81 @@ async def biometric(_,message):
 
         response = s.get(biometric_url, headers=headers)
 
-        # Parse the HTML content using BeautifulSoup
-        biodata = BeautifulSoup(response.text, 'html.parser')
-    biotable = biodata.find('tbody')
+    # Parse the HTML content using BeautifulSoup
+    soup = BeautifulSoup(html_content, 'html.parser')
+
+    # Find the table
+    table = soup.find('table', class_='table')
+
     if 	'<title>Samvidha - Campus Management Portal - IARE</title>' in response.text:
         await logout_user(bot,chat_id)
         return
-    if not biotable:
+    
+    if not table: #renamed biotable to table
         await message.reply("Biometric data not found.")
         return
+    
+    if table:
+        # Find all rows in the table body except the last one
+        rows = table.find('tbody').find_all('tr')[:-1]
 
-    # Initialize counters for days present and days absent
-    days_present = 0
-    days_absent = 0
-    total_days = 0
+        # Get the second last row to extract the start date
+        start_date_row = rows[-1]
+        start_date = start_date_row.find_all('td')[3].text.strip()
 
-    biorows = biotable.find_all('tr')
+        # Dictionary to store attendance data for each student
+        attendance_data = {
+            'Start Date': start_date,
+            'Present Dates': [],
+            'Total Days Present': 0,
+            'Total Days Absent': 0,
+            'Total Days': 0
+            }
 
-    # Iterate over the rows and calculate days present and days absent
-    for row in biorows:
-        # Find the status cell in the row
-        cells = row.find_all('td')
 
-        # Extract the status text from the appropriate cell (in this case, the last cell)
-        status = cells[7].get_text(strip=True)
+        for row in rows:
+            # Extract data from each row
+            cells = row.find_all('td')
+            date = cells[3].text.strip()
+            in_time = cells[4].text.strip()
+            out_time = cells[5].text.strip()
+            status = cells[6].text.strip()
 
-        # Increment the respective counter based on the status
-        if 'Present' in status:
-            days_present += 1
-        elif 'Absent' in status:
-            days_absent += 1
-    total_days = days_present + days_absent
-        # total_days += 1
+            
+            # Update attendance count
+            if status.lower() == 'present':
+                attendance_data[roll_no]['Total Days Present'] += 1
+                attendance_data[roll_no]['Present Dates'].append(date)
+            else:
+                attendance_data[roll_no]['Total Days Absent'] += 1
+            
+            attendance_data['Total Days'] = attendance_data['Total Days Present'] + attendance_data['Total Days Absent']
 
-    # Calculate the biometric percentage
-    biometric_percentage = (days_present / total_days) * 100 if total_days != 0 else 0
-    biometric_percentage = round(biometric_percentage,3)
-    # Prepare the biometric message
-    #biometric_msg = f"Number of Days Present: {days_present}\nNumber of Days Absent: {days_absent}\nTotal Number of Days: {total_days}\nBiometric Percentage: \n{biometric_percentage}%"
-    intimes = []
-    outtimes = []
-    time_gap_more_than_six_hours = 0
-    sixintime = []
-    sixoutime = []
-    for row in biorows:
-        cell = row.find_all('td')
-        intime = cell[5].text.strip()
-        outtime = cell[6].text.strip()
-        if intime and outtime and ':' in intime and ':' in outtime:
-            intimes.append(intime)
-            outtimes.append(outtime)
-            intime_hour, intime_minute = intime.split(':')
-            outtime_hour, outtime_minute = outtime.split(':')
-            time_difference = (int(outtime_hour) - int(intime_hour)) * 60 + (int(outtime_minute) - int(intime_minute))
-            if time_difference >= 360:
-                time_gap_more_than_six_hours += 1
-        sixintime.append(intime)
-        sixoutime.append(outtime)
-    six_percentage = (time_gap_more_than_six_hours / total_days) * 100 if total_days != 0 else 0
-    six_percentage = round(six_percentage, 3)
-    #biometric_msg += f"\nbiometric Percentage(6 hours gap):\n{six_percentage}%"
-    next_biometric_time_str = None
-    if sixintime and sixintime[0] :
-        next_biometric_time = datetime.strptime(sixintime[0], "%H:%M") + timedelta(hours=6)
-        next_biometric_time_str = next_biometric_time.strftime("%H:%M")
-        #biometric_msg += f"\nBiometric should be kept again at: {next_biometric_time_str}"
-    if next_biometric_time_str==None:
+
+
+        # Calculate the biometric percentage
+            
+        biometric_percentage = (attendance_data['Total Days Present'] / attendance_data['Total Days']) * 100 if attendance_data['Total Days'] != 0 else 0
+        biometric_percentage = round(biometric_percentage,3)
+        
         biometric_msg = f"""
-    ```Biometric
-⫷
+        ```Biometric
+    ⫷
 
-● Total Days             -  {total_days}
+    ● Total Days             -  {attendance_data['Total Days']}
+                    
+    ● Days Present           -  {attendance_data['Total Days Present']}  
                 
-● Days Present           -  {days_present}  
-            
-● Days Absent            -  {days_absent}
-                
-● Biometric %            -  {biometric_percentage}  
-            
-● Biometric % (6h gap)   -  {six_percentage}
+    ● Days Absent            -  {attendance_data['Total Days Absent']}
+                    
+    ● Biometric %            -  {biometric_percentage}  
 
-⫸
+    ⫸
 
-@iare_unofficial_bot
-    ```
-    """
-    else:
-        biometric_msg = f"""
-    ```Biometric
-⫷
-
-● Total Days             -  {total_days}
-                
-● Days Present           -  {days_present}  
-            
-● Days Absent            -  {days_absent}
-                
-● Biometric %            -  {biometric_percentage}  
-            
-● Biometric % (6h gap)   -  {six_percentage}
-
-● Evening Biometric Time  -  {next_biometric_time_str}
-
-⫸
-
-@iare_unofficial_bot
-    ```
-    """
-    await bot.send_message(chat_id,text=biometric_msg)
+    @iare_unofficial_bot
+        ```
+        """
+        await bot.send_message(chat_id,biometric_msg)
 
 @bot.on_message(filters.command(commands=['bunk']))
 async def bunk(bot,message):
