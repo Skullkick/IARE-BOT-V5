@@ -437,7 +437,7 @@ async def biometric(_,message):
         response = s.get(biometric_url, headers=headers)
 
     # Parse the HTML content using BeautifulSoup
-    soup = BeautifulSoup(html_content, 'html.parser')
+    soup = BeautifulSoup(response.text, 'html.parser')
 
     # Find the table
     table = soup.find('table', class_='table')
@@ -472,6 +472,7 @@ async def biometric(_,message):
             # Extract data from each row
             cells = row.find_all('td')
             date = cells[3].text.strip()
+            roll_no = cells[1].text.strip()
             in_time = cells[4].text.strip()
             out_time = cells[5].text.strip()
             status = cells[6].text.strip()
